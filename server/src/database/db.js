@@ -1,17 +1,15 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 async function connectDb() {
     try {
-        await mongoose.connect('mongodb+srv://xappapets:BqGNcB2RAsXoCi27@cluster0.pnikwct.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+        await mongoose.connect(process.env.MONGO_URI)
+        console.log('Conectado ao MongoDB')
+    } catch (err) {
+        console.log(`Erro: ${err}`);
     }
-    catch (err) {
-        console.log(`Erro: ${err}`)
-    }
-
 }
-
-
-
-
 
 export default connectDb;

@@ -1,34 +1,5 @@
 import mongoose from 'mongoose';
-
-// Função para calcular as diárias
-const calcularDiarias = (dataEntrada, dataSaida) => {
-    const dataEntradaDate = new Date(dataEntrada);
-    const dataSaidaDate = new Date(dataSaida || Date.now()); // Caso não tenha data de saída, usa a data atual
-    const dias = Math.floor((dataSaidaDate - dataEntradaDate) / (1000 * 60 * 60 * 24)); // Converte milissegundos para dias
-    return dias >= 0 ? dias : 0; // Garantir que as diárias não sejam negativas
-};
-
-// Função para calcular as diárias totais previstas
-const calcularDiariasTotais = (dataEntrada, dataSaidaPrevista) => {
-    if (!dataSaidaPrevista) return 0; // Se não houver previsão de saída, retorna 0
-    return calcularDiarias(dataEntrada, dataSaidaPrevista);
-};
-
-const petSchema = new mongoose.Schema({
-    nomeTutor: { type: String, required: true },
-    contatoTutor: { type: String, required: true },
-    especie: {
-        type: String,
-        enum: ['Cachorro', 'Gato'],
-        required: true
-    },
-    raca: { type: String, required: true },
-    dataEntrada: {
-        type: Date,
-        required: true
-    },
-    dataSaidaPrevista: Date,
-});
+import petSchema from './schema.js';
 
 
 const Pet = mongoose.model('Pet', petSchema);
