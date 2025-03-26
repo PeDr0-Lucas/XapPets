@@ -28,30 +28,11 @@ const petSchema = new mongoose.Schema({
         required: true
     },
     dataSaidaPrevista: Date,
-    diarias: {
-        type: Number,
-        default: function () {
-            return calcularDiarias(this.dataEntrada, this.dataSaidaPrevista);
-        }
-    },
-    diariasTotais: {
-        type: Number,
-        default: function () {
-            return calcularDiariasTotais(this.dataEntrada, this.dataSaidaPrevista);
-        }
-    }
 });
 
-// Hook de Mongoose para recalcular as diárias quando a data de saída prevista for atualizada
-petSchema.pre('save', function (next) {
-    this.diarias = calcularDiarias(this.dataEntrada, this.dataSaidaPrevista);
-    this.diariasTotais = calcularDiariasTotais(this.dataEntrada, this.dataSaidaPrevista);
-    next();
-});
 
 const Pet = mongoose.model('Pet', petSchema);
 
-// Funções de manipulação de dados
 
 export const getAllPets = async () => {
     try {
