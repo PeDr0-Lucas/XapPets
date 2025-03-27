@@ -2,12 +2,13 @@ import express from 'express'
 import petRoutes from './routes/petRoutes.js'
 import dotenv from 'dotenv'
 import connectDb from './database/db.js'
+import cors from 'cors'
 
 dotenv.config()
 connectDb()
 
 const app = express()
-
+app.use(cors())
 
 
 app.use(express.json())
