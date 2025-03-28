@@ -1,167 +1,124 @@
 # **XapPets 🐶🏨**
 
- 
+## Descrição do Projeto 📋
 
-Uma aplicação construída em **Node.js**, **Flutter** e **MongoDb**, que realiza um controle de Animais em um determinado Hotel. O projeto se trata de um CRUD, permitindo o usuário: Criar, Listar, Editar e Deletar os dados referente aos animais.
+Uma aplicação de gerenciamento de animais para hotéis de pets, desenvolvida com tecnologias modernas para oferecer uma solução completa de CRUD (Create, Read, Update, Delete).
 
- 
+## **🚀 Tecnologias Utilizadas**
 
----
+- **Backend:** Node.js, Express.js
+- **Frontend:** Flutter
+- **Banco de Dados:** MongoDB
+- **Arquitetura:** 
+  - Frontend: Provider
+  - Backend: MVC (Model-View-Controller)
 
- 
+## **🛠️ Pré-requisitos**
 
-## **🚀 Instalação e Configuração**
+- Node.js (v16 ou superior)
+- npm ou yarn
+- Flutter SDK (última versão estável)
+- MongoDB
 
- 
-### **Pré-requisitos**
+## **📦 Instalação**
 
-- Node.js (v16 ou superior);
-- **npm** ou **yarn**;
-- Flutter SDK
-
-### **Clonar Repositório**
-
- 
-
-```bash
-
- 
-
-    https://github.com/PeDr0-Lucas/XapPets.git
-
- 
-
-```
-
- 
-
-### **🔧 Instalar Dependências**
-
- 
-
-#### **FrontEnd**
-
-Com npm
-
- 
+### Clonar Repositório
 
 ```bash
-
-    cd frontend
-
-    flutter pub get
-
+git clone https://github.com/PeDr0-Lucas/XapPets.git
+cd XapPets
 ```
 
-#### **Backend**
-
-Com npm
-
- 
+### Configuração do Backend
 
 ```bash
-
-    cd server
-
-    npm install
-
+cd server
+npm install
 ```
 
-### Estrutura do Projeto
- 
-
-#### FrontEnd
- 
-frontend/
-
-|
-
-|---android/
-
-|---lib/
-
-|   |--model/
-
-|   |   |--pet_model.dart
-
-|   |--provider/
-
-|   |   |--pet_provider.dart
-
-|   |--screens/
-
-|   |   |--editPet.dart
-
-|   |   |--home.dart
-
-|   |--service/
-
-|   |   |--api_service.dart
-
-|   |--main.dart
-
-|
-
-|--pubspec.yaml
-
-|--pubspec.lock
-
- 
-#### BackEnd
-
-
-Server/
-
-|
-
-|---src/
-
-|   |--controllers/
-
-|   |   |--petController.js
-
-|   |--database/
-
-|   |   |--db.js
-
-|   |--models/
-
-|   |   |--Pet.js
-
-|   |   |--schema.js
-
-|   |--routes/
-
-|   |   |--petRoutes.js
-
-|   |--utils/
-
-|   |   |--sum.js
-
-|   |   |--validations.js
-
-|--index.js
-
-
-### **Rodando o Projeto**
-
-#### **FrontEnd**
+### Configuração do Frontend
 
 ```bash
-
-    cd frontend
-    flutter run
-
+cd ../frontend
+flutter pub get
 ```
 
-#### **Backend**
+### Configuração do Banco de Dados
 
-Com npm
+1. Instale o MongoDB
+2. Crie um banco de dados para o projeto
+3. Configure as credenciais de conexão no arquivo `server/src/database/db.js`
+
+## **🚀 Executando o Projeto**
+
+### Iniciando o Backend
 
 ```bash
-
-    cd server
-    npm start
+cd server
+npm start
 ```
 
+### Iniciando o Frontend
 
+```bash
+cd frontend
+flutter run
+```
+
+## **✨ Funcionalidades**
+
+- Cadastro de animais
+- Listagem de animais
+- Edição de informações dos animais
+- Exclusão de registros de animais
+
+## **📡 Rotas da API**
+
+### Pets
+
+#### Buscar Todos os Pets
+- **Método:** GET
+- **Endpoint:** `/pets`
+- **Descrição:** Retorna todos os pets cadastrados com informações de diárias
+
+#### Buscar Pet por ID
+- **Método:** GET
+- **Endpoint:** `/pets/:id`
+- **Descrição:** Retorna os detalhes de um pet específico
+
+#### Criar Novo Pet
+- **Método:** POST
+- **Endpoint:** `/pets`
+- **Corpo da Requisição:**
+```json
+{
+  "nomeTutor": "Nome do Tutor",
+  "contatoTutor": "99999-9999",
+  "especie": "cachorro",
+  "raca": "Labrador",
+  "dataEntrada": "DD/MM/AAAA",
+  "dataSaidaPrevista": "DD/MM/AAAA" (opcional)
+}
+```
+
+#### Atualizar Pet
+- **Método:** PUT
+- **Endpoint:** `/pets/:id`
+- **Corpo da Requisição:** Mesmo formato da criação, com campos opcionais
+
+#### Excluir Pet
+- **Método:** DELETE
+- **Endpoint:** `/pets/:id`
+- **Descrição:** Remove um pet específico do sistema
+
+### **⚠️ Validações**
+- Telefone deve estar no formato `xxxxx-xxxx`
+- Espécie deve ser "cachorro" ou "gato"
+- Data no formato `DD/MM/AAAA`
+- Todos os campos obrigatórios devem ser preenchidos
+
+## **🛠️ Troubleshooting**
+
+- Certifique-se de que todas as dependências estão instaladas corretamente
+- Verifique a versão do Node.js e do Flutter
+- Confirme que o MongoDB está rodando antes de iniciar o backend
