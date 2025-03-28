@@ -6,11 +6,15 @@ const Pet = mongoose.model('Pet', petSchema);
 
 
 export const getAllPets = async () => {
+
     try {
-        return await Pet.find();
+        const pets = await Pet.find();
+        console.log('pets', pets)
+        return pets;
     } catch (error) {
         throw new Error(`Erro ao buscar todos os pets: ${error.message}`);
     }
+
 }
 
 export const getPetById = async (id) => {
@@ -22,6 +26,7 @@ export const getPetById = async (id) => {
 }
 
 export const postPet = async (pet) => {
+
     try {
         const novoPet = new Pet(pet);
         return await novoPet.save();
@@ -31,6 +36,7 @@ export const postPet = async (pet) => {
 }
 
 export const putPetById = async (id, pet) => {
+
     try {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             throw new Error(`Id inválido: ${id}`);
@@ -46,6 +52,7 @@ export const putPetById = async (id, pet) => {
 }
 
 export const deletePetById = async (id) => {
+
     try {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             throw new Error('ID inválido');

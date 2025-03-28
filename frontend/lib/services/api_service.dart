@@ -10,6 +10,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
+      print(data);
       return data.map((pet) => Pet.fromJson(pet)).toList();
     } else {
       throw Exception('Falha ao carregar pets: ${response.body}');

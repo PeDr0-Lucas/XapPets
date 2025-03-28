@@ -13,7 +13,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<PetProvider>(context, listen: false).getPets();
     });
@@ -23,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pets Hospedados'),
+        title: Text('XapPets'),
         centerTitle: true,
         backgroundColor: Colors.blue[600],
       ),
@@ -69,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   title: Text(
-                    pet.raca,
+                    '${pet.raca} - ${pet.especie}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
@@ -82,6 +81,33 @@ class _HomeScreenState extends State<HomeScreen> {
                           'Saída Prevista: ${pet.dataSaidaPrevista}',
                           style: TextStyle(color: Colors.orange[700]),
                         ),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Text(
+                            'Diárias Utilizadas: ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            '${pet.diarias}',
+                            style: TextStyle(
+                              color: _getDiariasColor(
+                                pet.diarias,
+                                pet.diariasTotais,
+                              ),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (pet.diariasTotais != null)
+                            Text(
+                              ' de ${pet.diariasTotais}',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
                   trailing: Row(
@@ -114,29 +140,27 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Passando um pet vazio com valores padrão
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder:
-                  (context) => PetEditScreen(
-                    pet: Pet(
-                      id: '', // ID vazio para novo pet
-                      nomeTutor: '',
-                      contatoTutor: '',
-                      especie: 'Cachorro', // valor padrão
-                      raca: '',
-                      dataEntrada: '',
-                      dataSaidaPrevista: null,
-                    ),
-                  ),
-            ),
+            MaterialPageRoute(builder: (context) => PetEditScreen()),
           );
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.blue[600],
       ),
     );
+  }
+
+  Color _getDiariasColor(int diarias, int? diariasTotais) {
+    if (diariasTotais == null) return Colors.blue;
+
+    double porcentagem = diarias / diariasTotais;
+
+    if (porcentagem >= 0.8) return Colors.red;
+
+    if (porcentagem >= 0.5) return Colors.orange;
+
+    return Colors.green;
   }
 
   IconData _getSpecieIcon(String especie) {

@@ -23,3 +23,30 @@ export const validarDatas = (dataEntrada, dataSaidaPrevista) => {
         }
     }
 };
+export const validarFormatoData = (data) => {
+    const dataRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    if (!dataRegex.test(data)) return false;
+
+    const [dia, mes, ano] = data.split('/').map(Number);
+
+    if (mes < 1 || mes > 12) return false;
+
+    const diasNoMes = new Date(ano, mes, 0).getDate();
+    if (dia < 1 || dia > diasNoMes) return false;
+
+    return true;
+};
+
+export const formatarData = (data) => {
+    if (!data) return null;
+    const [dia, mes, ano] = data.split('/');
+    return new Date(`${ano}-${mes}-${dia}`);
+};
+
+export const converterDataParaFormatoISO = (dataString) => {
+    if (!dataString) return null;
+
+    const [dia, mes, ano] = dataString.split('/');
+
+    return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+};

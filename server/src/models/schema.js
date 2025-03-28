@@ -21,11 +21,11 @@ const petSchema = new mongoose.Schema({
         required: true,
     },
     dataEntrada: {
-        type: Date,
+        type: String,
         required: true,
     },
     dataSaidaPrevista: {
-        type: Date,
+        type: String,
     },
 });
 

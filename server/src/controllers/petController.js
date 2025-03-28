@@ -1,25 +1,27 @@
 import { getAllPets, getPetById, postPet, putPetById, deletePetById } from '../models/Pet.js';
-import { validarTelefone, validarEspecie, validarDatas } from '../utils/validations.js';
+import { validarTelefone, validarEspecie, validarDatas, validarFormatoData, formatarData, converterDataParaFormatoISO } from '../utils/validations.js';
 import { calcularDiarias } from '../utils/sum.js';
 
-
-const formatarData = (data) => {
-    if (!data) return null;
-    const [dia, mes, ano] = data.split('/');
-    return new Date(`${ano}-${mes}-${dia}`);
-};
 
 export const getPets = async (req, res) => {
     try {
         const pets = await getAllPets();
 
-        const petsComDiarias = pets.map(pet => ({
-            ...pet.toObject(),
-            ...calcularDiarias(pet.dataEntrada, pet.dataSaidaPrevista)
-        }));
+        const petsComDiarias = pets.map(pet => {
+            const petObject = pet.toObject();
+
+            const dataEntradaISO = converterDataParaFormatoISO(petObject.dataEntrada);
+            const dataSaidaPrevistaISO = converterDataParaFormatoISO(petObject.dataSaidaPrevista);
+
+            return {
+                ...petObject,
+                ...calcularDiarias(dataEntradaISO, dataSaidaPrevistaISO)
+            };
+        });
 
         res.json(petsComDiarias);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Erro ao buscar pets' });
     }
 };
@@ -31,6 +33,7 @@ export const getPet = async (req, res) => {
 
         res.json({
             ...pet.toObject(),
+            ...calcularDiarias(pet.dataEntrada),
             ...calcularDiarias(pet.dataEntrada, pet.dataSaidaPrevista)
         });
     } catch (error) {
@@ -39,6 +42,7 @@ export const getPet = async (req, res) => {
 };
 
 export const createPet = async (req, res) => {
+
     try {
         const { nomeTutor, contatoTutor, especie, raca, dataEntrada, dataSaidaPrevista } = req.body;
 
@@ -59,16 +63,23 @@ export const createPet = async (req, res) => {
         }
 
 
+        if (!validarFormatoData(dataEntrada)) {
+            return res.status(400).json({ error: 'Formato de data inválido. Use: DD/MM/AAAA' });
+        }
+
+        if (dataSaidaPrevista && !validarFormatoData(dataSaidaPrevista)) {
+            return res.status(400).json({ error: 'Formato de data de saída inválido. Use: DD/MM/AAAA' });
+        }
+
         const dataEntradaFormatada = formatarData(dataEntrada);
         const dataSaidaPrevistaFormatada = dataSaidaPrevista ? formatarData(dataSaidaPrevista) : null;
-
 
         validarDatas(dataEntradaFormatada, dataSaidaPrevistaFormatada);
 
         const novoPet = await postPet({
             ...req.body,
-            dataEntrada: dataEntradaFormatada,
-            dataSaidaPrevista: dataSaidaPrevistaFormatada,
+            dataEntrada: dataEntrada,
+            dataSaidaPrevista: dataSaidaPrevista,
             especie: especie.toLowerCase()
         });
 
@@ -83,25 +94,55 @@ export const updatePet = async (req, res) => {
         const petExistente = await getPetById(req.params.id);
         if (!petExistente) return res.status(404).json({ error: 'Pet não encontrado' });
 
-        const { especie, dataEntrada, dataSaidaPrevista } = req.body;
+        const { nomeTutor, contatoTutor, especie, raca, dataEntrada, dataSaidaPrevista } = req.body;
+
 
         if (especie && !validarEspecie(especie)) {
             return res.status(400).json({ error: 'Espécie inválida. Escolha entre "cachorro" ou "gato"' });
         }
 
-        // Formatar as datas corretamente antes de validar
+
+        if (contatoTutor && !validarTelefone(contatoTutor)) {
+            return res.status(400).json({ error: 'Formato de telefone inválido. Use: xxxxx-xxxx' });
+        }
+
+
+        if (raca && raca.trim() === '') {
+            return res.status(400).json({ error: 'A raça não pode ser vazia' });
+        }
+
+
+        if (dataEntrada && !validarFormatoData(dataEntrada)) {
+            return res.status(400).json({ error: 'Formato de data de entrada inválido. Use: DD/MM/AAAA' });
+        }
+
+        if (dataSaidaPrevista && !validarFormatoData(dataSaidaPrevista)) {
+            return res.status(400).json({ error: 'Formato de data de saída inválido. Use: DD/MM/AAAA' });
+        }
+
+
         const dataEntradaFormatada = dataEntrada ? formatarData(dataEntrada) : undefined;
         const dataSaidaPrevistaFormatada = dataSaidaPrevista ? formatarData(dataSaidaPrevista) : undefined;
 
-        // Validar as datas
-        validarDatas(dataEntradaFormatada, dataSaidaPrevistaFormatada);
 
-        const petAtualizado = await putPetById(req.params.id, {
-            ...req.body,
-            dataEntrada: dataEntradaFormatada,
-            dataSaidaPrevista: dataSaidaPrevistaFormatada,
-            especie: especie ? especie.toLowerCase() : undefined
-        });
+        if (dataEntradaFormatada || dataSaidaPrevistaFormatada) {
+            validarDatas(
+                dataEntradaFormatada || petExistente.dataEntrada,
+                dataSaidaPrevistaFormatada || petExistente.dataSaidaPrevista
+            );
+        }
+
+
+        const updateData = {
+            ...(nomeTutor && { nomeTutor }),
+            ...(contatoTutor && { contatoTutor }),
+            ...(especie && { especie: especie.toLowerCase() }),
+            ...(raca && { raca }),
+            ...(dataEntrada && { dataEntrada }),
+            ...(dataSaidaPrevista && { dataSaidaPrevista })
+        };
+
+        const petAtualizado = await putPetById(req.params.id, updateData);
 
         res.json(petAtualizado);
     } catch (error) {
