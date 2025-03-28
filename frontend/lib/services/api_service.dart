@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../model/pet.dart';
+import 'dart:convert';
+import '../model/pet_model.dart';
 
 class ApiService {
   final String baseUrl = 'http://localhost:3000';
@@ -26,7 +26,7 @@ class ApiService {
     }
   }
 
-  Future<void> addPet(Pet pet) async {
+  Future<Pet> addPet(Pet pet) async {
     final response = await http.post(
       Uri.parse('$baseUrl/pets'),
       headers: <String, String>{'Content-Type': 'application/json'},
@@ -40,12 +40,14 @@ class ApiService {
       }),
     );
 
-    if (response.statusCode != 201) {
+    if (response.statusCode == 201) {
+      return Pet.fromJson(json.decode(response.body));
+    } else {
       throw Exception('Falha ao adicionar pet: ${response.body}');
     }
   }
 
-  Future<void> updatePet(Pet pet) async {
+  Future<Pet> updatePet(Pet pet) async {
     final response = await http.put(
       Uri.parse('$baseUrl/pets/${pet.id}'),
       headers: <String, String>{'Content-Type': 'application/json'},
@@ -59,7 +61,9 @@ class ApiService {
       }),
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
+      return Pet.fromJson(json.decode(response.body));
+    } else {
       throw Exception('Falha ao atualizar pet: ${response.body}');
     }
   }

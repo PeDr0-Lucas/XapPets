@@ -13,8 +13,8 @@ const petSchema = new mongoose.Schema({
     especie: {
         type: String,
         required: true,
-        enum: ['cachorro', 'gato', 'Cachorro', 'Gato'], // Aceita ambas as versões
-        set: (val) => val.toLowerCase(), // Converte para minúsculo antes de armazenar
+        enum: ['cachorro', 'gato', 'Cachorro', 'Gato'],
+        set: (val) => val.toLowerCase(),
     },
     raca: {
         type: String,

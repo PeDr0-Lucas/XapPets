@@ -2,6 +2,13 @@ import { getAllPets, getPetById, postPet, putPetById, deletePetById } from '../m
 import { validarTelefone, validarEspecie, validarDatas } from '../utils/validations.js';
 import { calcularDiarias } from '../utils/sum.js';
 
+
+const formatarData = (data) => {
+    if (!data) return null;
+    const [dia, mes, ano] = data.split('/');
+    return new Date(`${ano}-${mes}-${dia}`);
+};
+
 export const getPets = async (req, res) => {
     try {
         const pets = await getAllPets();
@@ -51,9 +58,20 @@ export const createPet = async (req, res) => {
             return res.status(400).json({ error: 'A raça é obrigatória' });
         }
 
-        validarDatas(dataEntrada, dataSaidaPrevista);
 
-        const novoPet = await postPet({ ...req.body, especie: especie.toLowerCase() });
+        const dataEntradaFormatada = formatarData(dataEntrada);
+        const dataSaidaPrevistaFormatada = dataSaidaPrevista ? formatarData(dataSaidaPrevista) : null;
+
+
+        validarDatas(dataEntradaFormatada, dataSaidaPrevistaFormatada);
+
+        const novoPet = await postPet({
+            ...req.body,
+            dataEntrada: dataEntradaFormatada,
+            dataSaidaPrevista: dataSaidaPrevistaFormatada,
+            especie: especie.toLowerCase()
+        });
+
         res.status(201).json(novoPet);
     } catch (error) {
         res.status(400).json({ error: `Erro ao cadastrar o pet: ${error.message}` });
@@ -71,10 +89,17 @@ export const updatePet = async (req, res) => {
             return res.status(400).json({ error: 'Espécie inválida. Escolha entre "cachorro" ou "gato"' });
         }
 
-        validarDatas(dataEntrada, dataSaidaPrevista);
+        // Formatar as datas corretamente antes de validar
+        const dataEntradaFormatada = dataEntrada ? formatarData(dataEntrada) : undefined;
+        const dataSaidaPrevistaFormatada = dataSaidaPrevista ? formatarData(dataSaidaPrevista) : undefined;
+
+        // Validar as datas
+        validarDatas(dataEntradaFormatada, dataSaidaPrevistaFormatada);
 
         const petAtualizado = await putPetById(req.params.id, {
             ...req.body,
+            dataEntrada: dataEntradaFormatada,
+            dataSaidaPrevista: dataSaidaPrevistaFormatada,
             especie: especie ? especie.toLowerCase() : undefined
         });
 
